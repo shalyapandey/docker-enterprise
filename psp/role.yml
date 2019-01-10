@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: psp-role
+  namespace: blue
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - podsecuritypolicy
+    resourceName:
+      - restrict-root
+    verbs:
+      - use
