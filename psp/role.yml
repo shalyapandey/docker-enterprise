@@ -8,7 +8,6 @@ rules:
       - ""
     resources:
       - podsecuritypolicy
-    resourceName:
+    resourceNames:
       - restrict-root
-    verbs:
-      - use
+    verbs: ["use","list","get"]
