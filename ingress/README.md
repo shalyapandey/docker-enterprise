@@ -1,9 +1,10 @@
-# Production Ingress Deployment in UCP 3.0
+# Production Ingress Deployment in Docker Enterprise UCP 3.1
 
 ## Overview
 
+Ingress is an API object that manages external access to the services in a cluster, typically HTTP. Ingress requires to be deployed separately in UCP 3.1. You can deploy a variety of ingress controllers but the supported one is the [NGINX Ingress Controller](https://github.com/kubernetes/ingress-nginx). The following instructions provide highly-available production deployment of the controller. 
 
-Ingress is an API object that manages external access to the services in a cluster, typically HTTP. Ingress requires to be deployed separately in UCP 3.1. You can deploy a variety of ingress controllers but the supported one is the [NGINX Ingress Controller](https://github.com/kubernetes/ingress-nginx). The following instructions provide highly-available production deployment of the controller.
+All the config files and source code is available under my [Docker Enterprise Guides and Tools Github Repo](https://github.com/nicolaka/docker-enterprise). 
 
 
 ## Prerequisite
@@ -12,7 +13,6 @@ Ingress is an API object that manages external access to the services in a clust
 - UCP 3.1.X deployed and properly configured
 - Two or Three Dedicated Infra Nodes deployed as UCP worker nodes
 - An external load-balancer fronting these nodes with an associated VIP that resolves application DNS (e.g `*.app.docker.mycompany.com`)
-
 
 
 ### Step 1: Labeling the Infrastructure Nodes
@@ -165,6 +165,7 @@ Now it's time to deploy the NGINX Controller. Note that in the following templat
 
 
 ```
+🐳  → cat nginx-ingress-deployment.yaml
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -426,4 +427,7 @@ NAME                          HOSTS                                          ADD
 dockerdemo-ingress   dockerdemo.app.docker.example.com             80        7d
 ```
 
-Assuming you have already registered a DNS record for your application pointing to the external load-balancer fronting the `infra` nodes, you should be able to access your application using the URL.
+Assuming you have already registered a DNS record for your application pointing to the external load-balancer fronting the `infra` nodes, you should be able to access your application using the URL.You can also scale the docker demo deployment to test how ingress correctly routes traffic to all the backend pods!
+
+![dockerdemo.png](img/dockerdemo.png)
+
