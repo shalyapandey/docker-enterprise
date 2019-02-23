@@ -13,6 +13,7 @@ All the config files and source code is available under my [Docker Enterprise Gu
 - UCP 3.1.X deployed and properly configured
 - Two or Three Dedicated Infra Nodes deployed as UCP worker nodes
 - An external load-balancer fronting these nodes with an associated VIP that resolves application DNS (e.g `*.app.docker.mycompany.com`)
+- The external loadbalancer needs to forward HTTP traffic to port 38080 and HTTPS traffic to 38443. You can configure those as you wish but the below example assumes that.
 
 
 ### Step 1: Labeling the Infrastructure Nodes
@@ -146,7 +147,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: nginx-ingress-service-account
-  namespace: ingress
+  namespace: infra
 roleRef:
   kind: ClusterRole
   name: nginx-ingress-cluster-role
@@ -268,7 +269,7 @@ spec:
       serviceAccountName: nginx-ingress-service-account 
       containers:
         - name: nginx-ingress-controller
-          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.10.2
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.21.0
           args:
             - /nginx-ingress-controller
             - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
@@ -292,7 +293,7 @@ spec:
             protocol: TCP
           - name: https
             containerPort: 443
-            hostPort: 38
+            hostPort: 38443
             protocol: TCP
           livenessProbe:
             failureThreshold: 3
