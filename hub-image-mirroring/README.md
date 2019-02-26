@@ -9,7 +9,7 @@ Enterprises are facing a challenge of balancing the speed at which they introduc
 - Docker Trusted Registry 2.6.2+ with Internet(Proxy Ok) Access
 - Docker Hub ID / Account
 
-![solution.png](img/hub_v4.png)
+![solution.png](img/hub_v5.png)
 ## Solution Approach
 
 Docker Trusted Registry (DTR) is the registry component of Docker Enterprise. You can deploy it on-premise within your data-center or on a private or public cloud. It is not a SaaS product. Enterprises use DTR to securely store and distribute all their container images. It is based on of the open-source Docker registry but adds Enterprise functionalities such as high-availability, image vulnerability scanning, image signing, image caching, and role-based access control to name a few. There are, however a couple of features within DTR that would address the challenge I described earlier,namely: Image Mirroring, Scanning, and Promotion.
