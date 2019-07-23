@@ -4,18 +4,15 @@ Building a multi-tenant shared container platform is no easy task! In this artic
 
 ### Context
 
-The focus of this post is on Docker Enterprise 3.0 runtime control plane, UCP, and specifically the Kubernetes orchestrator within it. UCP 3.0, that went GA back in early 2018, ships with a fully-supported and conformant Kubernetes distribution. Kubernetes provides a long list of capabilities for orchestrating your container-based application deployments at scale. With these capabilities comes the challenge of ensuring that different teams using the platform/orchestrator are utilizing the best out of the platform without interfering with the other teams. Although UCP provides a set of guide-rails, there is still a need for the UCP admins to go through a set of Kubernetes policy definitions and enforcements. I will go in details through the following 7 areas that every UCP admin needs to consider before onboarding their teams into the platform.
+The focus of this post is on Docker Enterprise 3.0 runtime control plane, UCP, and specifically the Kubernetes orchestrator within it. UCP 3.0, that went GA back in early 2018, ships with a fully-supported and conformant Kubernetes distribution. Kubernetes provides a long list of capabilities for orchestrating your container-based application deployments at scale. With these capabilities comes the challenge of ensuring that different teams using the platform/orchestrator are utilizing the best out of the platform without interfering with the other teams. Although UCP provides a set of guide-rails, there is still a need for the UCP admins to go through a set of Kubernetes policy definitions and enforcements. I will go in details through the following 7 areas that every UCP admin needs to consider before onboarding their teams into the platform:
 
-- [7 Practical Steps to Onboard your Teams into Docker Enterprise 3.0](#7-practical-steps-to-onboard-your-teams-into-docker-enterprise-30)
-    - [Context](#context)
-  - [Organizational Layout](#organizational-layout)
-  - [Namespaces](#namespaces)
-  - [Network Security Policies](#network-security-policies)
-  - [Resource Quotas and Limits](#resource-quotas-and-limits)
-  - [Role Based Access Control Policies](#role-based-access-control-policies)
-  - [Pod Security Policies](#pod-security-policies)
-  - [Access Guidelines](#access-guidelines)
-  - [Conclusion](#conclusion)
+  - [1. Organizational Layout](#organizational-layout)
+  - [2. Namespaces](#namespaces)
+  - [3. Network Security Policies](#network-security-policies)
+  - [4. Resource Quotas and Limits](#resource-quotas-and-limits)
+  - [5. Role Based Access Control Policies](#role-based-access-control-policies)
+  - [6. Pod Security Policies](#pod-security-policies)
+  - [7. Access Guidelines](#access-guidelines)
 
 ## Organizational Layout
 
@@ -36,7 +33,7 @@ Finally, the following table shows how Docker Enterprise subjects are mapped to 
 | User | User
 | Service Account | Service Account 
 
-Once you map out your organizations and team structure to map what suits your internal teams you are ready to create teams and organizations in Docker Enterprise. Below you'll find useful links to help you through that process. Remember that pretty much you can do/automate all of these steps via [UCP's API](https://docs.docker.com/reference/ucp/3.1/api/)
+Once you map out your organizations and team structure to map what suits your internal teams you are ready to create teams and organizations in Docker Enterprise. Below you'll find useful links to help you through that process. Remember that pretty much you can do/automate all of these steps via [UCP's API](https://docs.docker.com/reference/ucp/3.2/api/)
 
 **Resources:**
 - [Enabling LDAP/AD Based Authentication](https://docs.docker.com/ee/ucp/admin/configure/external-auth/)
@@ -388,6 +385,7 @@ Ensure that your roles do not allow more than the absolute necessary set of perm
 
 Pod Security Policies(PSP) enable fine-grained authorization of pod creation and updates. It is a fundamentally important authorization mechanism to ensure pods are created with limited capabilities. PSP is enabled by default in UCP 3.2. By default, there are two policies defined within UCP, `privileged` and `unprivileged`. Additionally, there is a `ClusterRoleBinding` that gives every single user access to the privileged policy. This is for backward compatibility after an upgrade. By default, any user can create any pod. All pods created with the default service account in their namespace would use the first policy alphabaticaly which is in this case is the `privileged` policy (see below)
 
+
 ```
 → kubectl describe psp privileged
 Name:  privileged
@@ -498,13 +496,25 @@ subjects:
 🐳  → kubectl apply -f psp-rolebinding.yml
 rolebinding.rbac.authorization.k8s.io/psp-rolebinding created
 ```
+NOTE: In order to use these custom PSPs, admins must first remove the default `ucp:all:privileged-psp-role` clusterrolebinding. However, by doing so, users will not be able to deploy any pods until you have given them access to custom security policies using a rolebinding. Make sure to follow the detailed workflow in [this document](https://docs.docker.com/ee/ucp/kubernetes/pod-security-policies/). 
 
-Finally, when a user launches the pods they need to specify the service account that has access to this policy
+Finally, when a user launches the pods they need to specify the service 
+account that has access to this policy. 
 
-It is highly recommended to look into PSP and define baseline policies that best match your environment's requirements. 
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  serviceAccountName: blue-service-account
+  ...
+``` 
+
 
 **Resources:**
 - [Kubernetes Pod Security Policies Docs](https://kubernetes.io/docs/concepts/policy/pod-security-policy/)
+- [Using Pod Security Policies in UCP](https://docs.docker.com/ee/ucp/kubernetes/pod-security-policies/)
 - [Secure A Kubernetes Cluster With Pod Security Policies
 ](https://docs.bitnami.com/kubernetes/how-to/secure-kubernetes-cluster-psp/)
 

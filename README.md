@@ -4,7 +4,7 @@ I will be using this repo to aggregate helpful guides and tools for [Docker Ente
 
 ## Guidelines and Tools
 - [Production Ingress Deployment in Docker Enterprise UCP 3.1](ingress/README.md)
-- [Streamlinling A Container Image Mirroring from Docker Hub to On-Prem Docker Registry](hub-image-mirroring/README.md)
+- [Streamlined Docker Image Mirroring from Docker Hub to an Internal Docker Registry](hub-image-mirroring/README.md)
 - Pod Security Policies in Docker Enterprise(COMING SOON!)
 - 7 Practical Steps to Onboard Your Teams to Docker Enterprise(COMING SOON!)
 
